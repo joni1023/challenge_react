@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
-
-
-
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import { TokenContext } from '../Context';
 
 function Login() {
     const [datos, setDatos] = useState({
@@ -10,9 +10,10 @@ function Login() {
         password:''
     });
     const [token, setToken] = useState('');
+    let navigate = useNavigate();
+    const userContext = useContext(TokenContext);
 
 const handleChange = (event) =>{
-    console.log(event.target.value);
     setDatos({
         ...datos,
         [event.target.name] : [event.target.value]
@@ -21,59 +22,81 @@ const handleChange = (event) =>{
 
 const handleSubmit = async (e) => {
     e.preventDefault();
+    Swal.fire({
+        title: 'Comprobando',
+        didOpen: () => {
+          Swal.showLoading()
+        },
+      })
     const response = await axios.post('http://challenge-react.alkemy.org/', {
         email: datos.email.toString(),
         password: datos.password.toString()
       })
       .then((response) => {
-        setToken(response.data.token);
+        Swal.close();
+        Swal.fire({
+            icon: 'success',
+            title: 'Your work has been saved',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        userContext.setToken(response.data.token);
+        
+        navigate("/Home");
       })
       .catch( (error) => {
-        console.log(error.message);
+        
+        Swal.fire({
+            title: 'Error!',
+            text: 'Do you want to continue',
+            icon: 'error',
+          })
       });
       
 }
 
 
     return ( 
-        <div style={{backgroundColor:'red', width:'auto', height:'100vh'}}>
-            <div className='d-flex justify-content-md-center align-items-center' style={{height:'100%'}}>
-            <div className="card" style={{width:'auto'}}>
-                <div className='card-body' >
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3" >
-                            <label className='form-label'>Email address</label>
+        <section className='vh-100 ' style={{backgroundImage:"url('https://media.istockphoto.com/vectors/burgers-seamless-pattern-background-hand-drawn-hamburger-and-french-vector-id1139458194?s=612x612')",backgroundPosition: "center"}}>
+            <div className='row d-flex justify-content-center align-items-center ' style={{height:'99%', width:'99%'}} >
+            <div className='col-12 col-md-8 col-lg-6 col-xl-3'>
+            <div className="card shadow-2-strong" style={{borderRadius:'1rem'}}>
+                <div className='card-body p-5 text-center' >
+                    <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
+                    <p className="50 mb-5">Please enter your login and password!</p>
+                    <form onSubmit={handleSubmit} >
+                        <div className="form-outline mb-4" >
                             <input 
+                            id="typeEmailX"
                             type="email" 
-                            className='form-control' 
+                            className='form-control form-control-lg' 
                             placeholder="Enter email" 
                             name='email'
                             onChange={handleChange}
                             />
-                            <div className="text-muted">
-                                We'll never share your email with anyone else.
-                            </div>
+                            
                         </div>
-                        <div className="mb-3" >
-                            <label className='form-label'>Password</label>
+                        <div className="form-outline mb-4" >
+                            
                             <input 
+                            id="typePasswordX"
                             type="password" 
-                            className='form-control' 
+                            className='form-control form-control-lg' 
                             placeholder="Password" 
                             name='password'
                             onChange={handleChange}
                             />
+                            
                         </div>
-                        <button className='btn btn-primary' type="submit" >
-                            Submit
-                        </button>
+                        <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
                         
                 
                     </form>
                 </div>
             </div> 
             </div>
-        </div>
+            </div>
+        </section>
         
      );
 }

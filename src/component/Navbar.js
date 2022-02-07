@@ -1,9 +1,18 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useContext} from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { TokenContext } from '../Context';
+
 
 function Navbar() {
+  let navigate = useNavigate();
+  const {deleteToken} =useContext(TokenContext);
+
+  const logout = () => {
+    deleteToken();
+     navigate("/Login");
+  };
     return ( 
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+  <nav className="navbar navbar-expand-lg navbar-light bg-light">
   <div className="container-fluid">
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon"></span>
@@ -31,7 +40,7 @@ function Navbar() {
           <p className='my-2 mx-2'>usuario</p>
         </li>
         <li className="nav-item">
-          <button className='btn btn-primary'>cerrar sesion</button>
+          <button className='btn btn-primary' onClick={logout}>cerrar sesion</button>
         </li>
       </ul>
 
